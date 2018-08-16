@@ -1,8 +1,19 @@
-Pour créer les répertoires de parcelles qui vont servir à alimenter les jobs lancés sur openmole, on part d'une base de données postgres qui contient une table (parcelles_rulez) qui associe à chaque parcelle ses règles et son idblock (correspondant à un répertoire).
+Pour créer les répertoires de parcelles qui vont servir à alimenter les jobs lancés sur openmole, on part d'une base de données postgres qui contient une table (**parcelles_rulez**) qui associe à chaque parcelle ses règles et son idblock (correspondant à un répertoire).
+
+***
+
+* [Créer la table parcelles_rulez en base de données](#parcelles_rulez)
+* [Générer les répertoires de parcelles regroupées par idblock](#shapeWriter)
+
+***
+
+
 
 # Créer **parcelles_rulez** à partir du shapefile des parcelles
- 
-## Import des parcelles dans une table (ceci peut être refait si on change le partitionnement en idblocks)
+
+<a id="parcelles_rulez"/>
+
+## Import des parcelles dans une table (à refaire si on change le partitionnement en idblocks)
 
 ```sh
 shp2pgsql parcels public.parcels | psql -h localhost -d imrandb -U imrandb
@@ -124,7 +135,9 @@ UPDATE parcelles_rulez SET simul = 0
 WHERE ST_AREA(geom) >= 5000 OR ST_AREA(geom) <= 50
 ```
 
+
 # Générer les répertoires regroupant les parcelles par idblock
+<a id="shapeWriter"/>
 
 Pour se faire on a un script nodejs qui attend en entrée entre autres paramètres (paramètres de connexion à la base, nom de la table, etc..), un fichier regroupant les différents idblocks pour lesquels on va regouper les parcelles.
 
