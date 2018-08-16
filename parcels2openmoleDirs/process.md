@@ -14,10 +14,10 @@ On décrit ici le processus pour créer cette table et générer les répertoire
 ***
 
 
+<a id="parcelles_rulez"/>
 
 # Créer **parcelles_rulez** à partir du shapefile des parcelles
 
-<a id="parcelles_rulez"/>
 
 ## Import des parcelles dans une table (à refaire si on change le partitionnement en idblocks)
 
@@ -34,7 +34,9 @@ Idem que précédemment, à coup de shp2pgsql, puis on fixe les problèmes topol
 ## Import des tables mos et amenagement (dumps disponibles **mos_fixed** et **amenagement_fixed**, plus à refaire normalement)
 Idem que précédemment, à coup de shp2pgsql, puis on fixe les problèmes topologiques avec une requête sql, et on ajoute un index sur la géométrie.
 
-## Création de la table **parcelles_rulez** liant les parcelles aux règles (à partir de **parcels** et **regles_fixed**): 
+## Création de la table **parcelles_rulez**
+
+### Création initiale à partir de **parcels** et **regles_fixed** 
 
 ```sql
 create table parcelles_rulez as (
@@ -100,7 +102,7 @@ create table parcelles_rulez as (
 )
 ```
 
-## Ajout d'un champs mos
+### Ajout d'un champs mos
 
 ```sql
 ALTER TABLE public.parcelles_rulez
@@ -110,7 +112,7 @@ update parcelles_rulez
 set mos2012 = 0;
 ```
 
-## Mettre à jour le champs mos avec la table **mos_fixed**
+### Mettre à jour le champs mos avec la table **mos_fixed**
 
 ```sql
 update parcelles_rulez p
@@ -122,7 +124,7 @@ set mos2012 = (
 		)
 ```
 
-## Mettre à 0 le champs simul si dans amenagement etat_lib est à "en cours"
+### Mettre à 0 le champs simul si dans amenagement etat_lib est à "en cours"
 
 ```sql
 update parcelles_rulez
@@ -134,7 +136,7 @@ where pid in (
 )
 ```
 
-## Filtrer les aires trop petites/grandes en mettant simul à 0
+### Filtrer les aires trop petites/grandes en mettant simul à 0
 
 ```sql
 UPDATE parcelles_rulez SET simul = 0
