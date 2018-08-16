@@ -1,4 +1,10 @@
-Pour créer les répertoires de parcelles qui vont servir à alimenter les jobs lancés sur openmole, on part d'une base de données postgres qui contient une table (**parcelles_rulez**) qui associe à chaque parcelle ses règles et son idblock (correspondant à un répertoire).
+Pour créer les répertoires de parcelles qui vont servir à alimenter les jobs lancés sur openmole, on part d'une base de données postgres qui contient une table (**parcelles_rulez**) associant à chaque parcelle ses règles et son idblock (correspondant à un répertoire).
+
+De cette table, on génère une arborescence de répertoires regroupant des parcelles dans un fichier `shapefile`, correspondant à un ilôt urbain.
+
+Chaque répertoire a pour nom son numéro de block (**idblock**) qui identifie l'ilôt.
+
+On décrit ici le processus pour créer cette table et générer les répertoires de parcelles.
 
 ***
 
@@ -22,13 +28,13 @@ shp2pgsql parcels public.parcels | psql -h localhost -d imrandb -U imrandb
 Cette table a la structure suivante :
 | gid | idpar | idblock | geom |
 
-## Import des règles dans la base (dump disponible **regles_fixed**, on a plus à le faire normalement)
+## Import des règles dans la base (dump disponible **regles_fixed**, plus à refaire normalement)
 Idem que précédemment, à coup de shp2pgsql, puis on fixe les problèmes topologiques avec une requête sql, et on ajoute un index sur la géométrie.
 
-## Import des tables mos et amenagement (dumps disponibles **mos_fixed** et **amenagement_fixed**, on a plus à le faire normalement)
+## Import des tables mos et amenagement (dumps disponibles **mos_fixed** et **amenagement_fixed**, plus à refaire normalement)
 Idem que précédemment, à coup de shp2pgsql, puis on fixe les problèmes topologiques avec une requête sql, et on ajoute un index sur la géométrie.
 
-## Création de la table parcelles_rulez liant les parcelles aux règles (tables parcels et regles_fixed): 
+## Création de la table **parcelles_rulez** liant les parcelles aux règles (à partir de **parcels** et **regles_fixed**): 
 
 ```sql
 create table parcelles_rulez as (
@@ -94,7 +100,7 @@ create table parcelles_rulez as (
 )
 ```
 
-## On ajoute le champs mos et on le met à zéro pour l'instant...
+## Ajout d'un champs mos
 
 ```sql
 ALTER TABLE public.parcelles_rulez
@@ -104,7 +110,7 @@ update parcelles_rulez
 set mos2012 = 0;
 ```
 
-## On le met à jour avec la table mos_fixed
+## Mettre à jour le champs mos avec la table **mos_fixed**
 
 ```sql
 update parcelles_rulez p
@@ -136,12 +142,14 @@ WHERE ST_AREA(geom) >= 5000 OR ST_AREA(geom) <= 50
 ```
 
 
-# Générer les répertoires regroupant les parcelles par idblock
+# Générer les répertoires regroupant les parcelles par `idblock`
 <a id="shapeWriter"/>
 
-Pour se faire on a un script nodejs qui attend en entrée entre autres paramètres (paramètres de connexion à la base, nom de la table, etc..), un fichier regroupant les différents idblocks pour lesquels on va regouper les parcelles.
+Pour se faire on a un script *nodejs* qui attend en entrée entre autres paramètres (paramètres de connexion à la base, nom de la table, etc..), un fichier listant les différents idblocks pour lesquels on va regouper les parcelles.
 
-## Pour générer ce fichier d'idblocks, on peut lancer via pgsql une commande comme :
+## Générer un fichier d'idblocks
+
+Par exemple, si dans notre cas, **parcelles94** correspond à un extrait de **parcelles_rulez** limité au département 94, on peut récupérer les idblocks dans un fichier de la manière suivante, via pgsql :
 
 ```sql
 COPY (
@@ -151,9 +159,9 @@ ORDER BY idblock
 ) to '/home/imran/idblocks94.csv'
 ```
 
-par exemple, si dans notre cas, parcelles94 correspondait à un extrait de parcelles_rulez limité au département 94
+## Lancer le script `shapeWriter.js`
 
-## On lance ensuite le script nodejs shapeWriter.js, en changeant les bons paramètres 
+On modifie d'abord les paramètres adéquats au début du script :
 
 ```sh
 const outputdir = '/home/imran/testoss/dep94/';
@@ -165,7 +173,7 @@ const db = 'iauidf_testoss';
 const table = 'parcelles94';
 ```
 
-via :
+et on exécute via :
 ```sh
 $ nodejs shapeWriter.js
 ```
