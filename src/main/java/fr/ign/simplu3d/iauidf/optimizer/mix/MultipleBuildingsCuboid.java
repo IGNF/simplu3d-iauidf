@@ -4,7 +4,6 @@ package fr.ign.simplu3d.iauidf.optimizer.mix;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ign.cogit.simplu3d.util.SimpluParameters;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -18,9 +17,6 @@ import fr.ign.cogit.geoxygene.api.spatial.geomroot.IGeometry;
 import fr.ign.cogit.geoxygene.convert.FromGeomToLineString;
 import fr.ign.cogit.geoxygene.spatial.geomaggr.GM_MultiCurve;
 import fr.ign.cogit.geoxygene.util.conversion.AdapterFactory;
-import fr.ign.cogit.simplu3d.experiments.iauidf.predicate.PredicateIAUIDF;
-import fr.ign.cogit.simplu3d.experiments.iauidf.regulation.Regulation;
-import fr.ign.cogit.simplu3d.experiments.iauidf.tool.BandProduction;
 import fr.ign.cogit.simplu3d.model.BasicPropertyUnit;
 import fr.ign.cogit.simplu3d.model.Environnement;
 import fr.ign.cogit.simplu3d.model.ParcelBoundary;
@@ -46,6 +42,7 @@ import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.IntersectionVolumeBinaryEnerg
 import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.VolumeUnaryEnergy;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.sampler.GreenSamplerBlockTemperature;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.visitor.PrepareVisitors;
+import fr.ign.cogit.simplu3d.util.SimpluParameters;
 import fr.ign.mpp.DirectRejectionSampler;
 import fr.ign.mpp.DirectSampler;
 import fr.ign.mpp.configuration.BirthDeathModification;
@@ -69,6 +66,9 @@ import fr.ign.rjmcmc.kernel.NullView;
 import fr.ign.rjmcmc.kernel.Transform;
 import fr.ign.rjmcmc.kernel.Variate;
 import fr.ign.rjmcmc.sampler.Sampler;
+import fr.ign.simplu3d.iauidf.predicate.PredicateIAUIDF;
+import fr.ign.simplu3d.iauidf.regulation.Regulation;
+import fr.ign.simplu3d.iauidf.tool.BandProduction;
 import fr.ign.simulatedannealing.SimulatedAnnealing;
 import fr.ign.simulatedannealing.endtest.EndTest;
 import fr.ign.simulatedannealing.schedule.Schedule;

@@ -35,10 +35,11 @@ import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.AbstractSimpleBuilding;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.Cuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.loader.LoaderCuboid;
 import fr.ign.cogit.simplu3d.util.SDPCalc;
+import fr.ign.cogit.simplu3d.util.SimpluParameters;
+import fr.ign.cogit.simplu3d.util.SimpluParametersJSON;
 import fr.ign.mpp.configuration.BirthDeathModification;
 import fr.ign.mpp.configuration.GraphConfiguration;
 import fr.ign.mpp.configuration.GraphVertex;
-import fr.ign.parameters.Parameters;
 import fr.ign.simplu3d.iauidf.IAUIDFSimulationResults;
 import fr.ign.simplu3d.iauidf.optimizer.mix.MultipleBuildingsCuboid;
 import fr.ign.simplu3d.iauidf.optimizer.mix.MultipleBuildingsTrapezoidCuboid;
@@ -463,7 +464,7 @@ public class EPFIFTask {
 			debugLine.add(bP.getLineRoad());
 		}
 
-		Parameters p = initiateSimulationParamters(r1, r2, fParam);
+		SimpluParameters p = initiateSimulationParamters(r1, r2, fParam);
 		// initialisation des paramètres de simulation
 		if (p == null) {
 			return new IAUIDFSimulationResults(featC, 0, 0);
@@ -568,7 +569,7 @@ public class EPFIFTask {
 	 */
 
 	private static IAUIDFSimulationResults simulRegulationByBasicPropertyUnitFinal(Environnement env,
-			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, Parameters p, BandProduction bP)
+			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, SimpluParameters p, BandProduction bP)
 			throws Exception {
 
 		IFeatureCollection<IFeature> featC = new FT_FeatureCollection<>();
@@ -632,7 +633,7 @@ public class EPFIFTask {
 	}
 
 	private static IAUIDFSimulationResults simulRegulationByBasicPropertyUnitFinalTrapezoid(Environnement env,
-			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, Parameters p, BandProduction bP)
+			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, SimpluParameters p, BandProduction bP)
 			throws Exception {
 
 		IFeatureCollection<IFeature> featC = new FT_FeatureCollection<>();
@@ -689,10 +690,10 @@ public class EPFIFTask {
 
 	}
 
-	private static Parameters initiateSimulationParamters(Regulation r1, Regulation r2, File f) throws Exception {
+	private static SimpluParameters initiateSimulationParamters(Regulation r1, Regulation r2, File f) throws Exception {
 		// Chargement du fichier de configuration
 
-		Parameters p = Parameters.unmarshall(f);
+		SimpluParameters p = new SimpluParametersJSON(f);
 
 		if (r2 != null) {
 

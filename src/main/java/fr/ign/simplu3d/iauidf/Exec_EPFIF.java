@@ -40,6 +40,8 @@ import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.AbstractSimpleBuilding;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.Cuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.loader.LoaderCuboid;
 import fr.ign.cogit.simplu3d.util.SDPCalc;
+import fr.ign.cogit.simplu3d.util.SimpluParameters;
+import fr.ign.cogit.simplu3d.util.SimpluParametersJSON;
 import fr.ign.mpp.configuration.BirthDeathModification;
 import fr.ign.mpp.configuration.GraphConfiguration;
 import fr.ign.mpp.configuration.GraphVertex;
@@ -364,9 +366,9 @@ public class Exec_EPFIF {
 		return featC;
 	}
 
-	private static Parameters initiateSimulationParamters(Regulation r1, Regulation r2, File f) throws Exception {
+	private static SimpluParameters initiateSimulationParamters(Regulation r1, Regulation r2, File f) throws Exception {
 		// Chargement du fichier de configuration
-		Parameters p = Parameters.unmarshall(f);
+		SimpluParameters p = new SimpluParametersJSON(f);
 		if (r2 != null) {
 			double newHeightMax = Math.max(r1.getArt_10_m(), r2.getArt_10_m());
 			if (newHeightMax != 99.0) {
@@ -456,7 +458,7 @@ public class Exec_EPFIF {
 			r2 = null;
 			System.out.println("Une seule bande");
 		}
-		Parameters p = initiateSimulationParamters(r1, r2, fParam);
+		SimpluParameters p = initiateSimulationParamters(r1, r2, fParam);
 		// initialisation des paramètres de simulation
 		if (p == null) {
 			return featC;
@@ -481,7 +483,7 @@ public class Exec_EPFIF {
 	//
 
 	private static IFeatureCollection<IFeature> simulRegulationByBasicPropertyUnitFinal(Environnement env,
-			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, Parameters p, BandProduction bP)
+			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, SimpluParameters p, BandProduction bP)
 			throws Exception {
 		IFeatureCollection<IFeature> featC = new FT_FeatureCollection<>();
 		// Création du Sampler (qui va générer les propositions de solutions)
@@ -527,7 +529,7 @@ public class Exec_EPFIF {
 	}
 
 	private static IFeatureCollection<IFeature> simulRegulationByBasicPropertyUnitFinalTrapezoid(Environnement env,
-			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, Parameters p, BandProduction bP)
+			BasicPropertyUnit bPU, int imu, Regulation r1, Regulation r2, SimpluParameters p, BandProduction bP)
 			throws Exception {
 		IFeatureCollection<IFeature> featC = new FT_FeatureCollection<>();
 		// Création du Sampler (qui va générer les propositions de solutions)

@@ -1,9 +1,8 @@
-package fr.ign.cogit.simplu3d.rjmcmc.cuboid.optimizer.mix;
+package fr.ign.simplu3d.iauidf.optimizer.mix;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ign.cogit.simplu3d.util.SimpluParameters;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -17,10 +16,6 @@ import fr.ign.cogit.geoxygene.api.spatial.geomroot.IGeometry;
 import fr.ign.cogit.geoxygene.convert.FromGeomToLineString;
 import fr.ign.cogit.geoxygene.spatial.geomaggr.GM_MultiCurve;
 import fr.ign.cogit.geoxygene.util.conversion.AdapterFactory;
-import fr.ign.cogit.simplu3d.experiments.enau.transformation.RotateCuboid;
-import fr.ign.cogit.simplu3d.experiments.iauidf.predicate.PredicateIAUIDF;
-import fr.ign.cogit.simplu3d.experiments.iauidf.regulation.Regulation;
-import fr.ign.cogit.simplu3d.experiments.iauidf.tool.BandProduction;
 import fr.ign.cogit.simplu3d.model.BasicPropertyUnit;
 import fr.ign.cogit.simplu3d.model.Environnement;
 import fr.ign.cogit.simplu3d.model.ParcelBoundary;
@@ -37,6 +32,7 @@ import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.ChangeHeight;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.ChangeLength;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.ChangeWidth;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.MoveCuboid;
+import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.RotateCuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.birth.ParallelPolygonTransform;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.birth.TransformToSurface;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.IntersectionVolumeBinaryEnergy;
@@ -47,6 +43,7 @@ import fr.ign.cogit.simplu3d.rjmcmc.generic.visitor.PrepareVisitors;
 import fr.ign.cogit.simplu3d.rjmcmc.trapezoid.geometry.ParallelTrapezoid2;
 import fr.ign.cogit.simplu3d.rjmcmc.trapezoid.transform.ParallelTrapezoidTransform;
 import fr.ign.cogit.simplu3d.rjmcmc.trapezoid.transformation.MoveParallelRightTrapezoid;
+import fr.ign.cogit.simplu3d.util.SimpluParameters;
 import fr.ign.mpp.DirectRejectionSampler;
 import fr.ign.mpp.DirectSampler;
 import fr.ign.mpp.configuration.BirthDeathModification;
@@ -70,6 +67,9 @@ import fr.ign.rjmcmc.kernel.NullView;
 import fr.ign.rjmcmc.kernel.Transform;
 import fr.ign.rjmcmc.kernel.Variate;
 import fr.ign.rjmcmc.sampler.Sampler;
+import fr.ign.simplu3d.iauidf.predicate.PredicateIAUIDF;
+import fr.ign.simplu3d.iauidf.regulation.Regulation;
+import fr.ign.simplu3d.iauidf.tool.BandProduction;
 import fr.ign.simulatedannealing.SimulatedAnnealing;
 import fr.ign.simulatedannealing.endtest.EndTest;
 import fr.ign.simulatedannealing.schedule.Schedule;
@@ -96,8 +96,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 
 	public static boolean ALLOW_INTERSECTING_AbstractSimpleBuilding = false;
 
-	public GraphConfiguration<AbstractSimpleBuilding> process(
-			BasicPropertyUnit bpu, SimpluParameters p, Environnement env,
+	public GraphConfiguration<AbstractSimpleBuilding> process(BasicPropertyUnit bpu, SimpluParameters p,
+			Environnement env,
 			PredicateIAUIDF<AbstractSimpleBuilding, GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>> pred,
 			Regulation r1, Regulation r2, BandProduction bP) throws Exception {
 
@@ -114,10 +114,9 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		RandomGenerator random = new MersenneTwister(42);
-		
-		
+
 		// Création de l'échantilloneur
 		Sampler<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>> samp = create_sampler(
 				random, p, bpu, pred, r1, r2, bP);
@@ -148,10 +147,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 
 	// Création de la configuration
 	/**
-	 * @param p
-	 *            paramètres importés depuis le fichier XML
-	 * @param bpu
-	 *            l'unité foncière considérée
+	 * @param p   paramètres importés depuis le fichier XML
+	 * @param bpu l'unité foncière considérée
 	 * @return la configuration chargée, c'est à dire la formulation énergétique
 	 *         prise en compte
 	 */
@@ -166,8 +163,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 
 	}
 
-	private GraphConfiguration<AbstractSimpleBuilding> create_configuration_intersection(SimpluParameters p, Geometry geom,
-			BasicPropertyUnit bpu) {
+	private GraphConfiguration<AbstractSimpleBuilding> create_configuration_intersection(SimpluParameters p,
+			Geometry geom, BasicPropertyUnit bpu) {
 		// Énergie constante : à la création d'un nouvel objet
 		ConstantEnergy<AbstractSimpleBuilding, AbstractSimpleBuilding> energyCreation = new ConstantEnergy<AbstractSimpleBuilding, AbstractSimpleBuilding>(
 				p.getDouble("energy"));
@@ -221,9 +218,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 	/**
 	 * Sampler
 	 * 
-	 * @param p
-	 *            les paramètres chargés depuis le fichier xml
-	 *            l'enveloppe dans laquelle on génère les positions
+	 * @param p les paramètres chargés depuis le fichier xml l'enveloppe dans
+	 *          laquelle on génère les positions
 	 * @return
 	 * @throws Exception
 	 */
@@ -260,7 +256,7 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 		// boîtes dans la première bande
 		double[] v = new double[] { env.minX(), env.minY(), minlen, minwid, minheight, 0. };
 		double[] v2 = new double[] { env.minX(), env.minY(), minlen, minwid, minheight, 0. };
-		
+
 		// On regarde si la contrainte de hauteur ne permet pas de réduire
 		// l'intervallle des hauteurs
 		if (r1 != null && r1.getArt_10_m() != 99) {
@@ -319,8 +315,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 					}
 
 				}
-				v2[2] = v2[2]/2;
-				d2[2] = d2[2]/2 + v2[2];
+				v2[2] = v2[2] / 2;
+				d2[2] = d2[2] / 2 + v2[2];
 				d2[5] = 1;
 				// The center is included in a band equals to half of max
 				// allowed width according to alignment line
@@ -448,7 +444,6 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 			p_simple = 0; // pas de transform on ne sera jamais dans la bande 2
 		}
 
-
 		// Si on ne peut pas construire dans la deuxième bande ni dans la
 		// première ça sert à rien de continue
 		if (kernels.isEmpty()) {
@@ -495,8 +490,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 			double amplitudeMove = p.getDouble("amplitudeMove");
 
 			Kernel<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>> simpleMovekernel = new Kernel<>(
-					pView, pView, variate, variate, new MoveParallelRightTrapezoid(amplitudeMove), 0.2,
-					1.0, "SimpleMove");
+					pView, pView, variate, variate, new MoveParallelRightTrapezoid(amplitudeMove), 0.2, 1.0,
+					"SimpleMove");
 			kernels.add(simpleMovekernel);
 
 			double amplitudeMaxDim = p.getDouble("amplitudeMaxDim");
@@ -566,7 +561,8 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 	private static List<Kernel<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>>> getBande2Kernels(
 			Variate variate,
 			NullView<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>> nullView,
-			SimpluParameters p, Transform transformSimple, ObjectBuilder<AbstractSimpleBuilding> sbuilder, boolean parallel) {
+			SimpluParameters p, Transform transformSimple, ObjectBuilder<AbstractSimpleBuilding> sbuilder,
+			boolean parallel) {
 
 		List<Kernel<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>>> kernels = new ArrayList<>();
 
