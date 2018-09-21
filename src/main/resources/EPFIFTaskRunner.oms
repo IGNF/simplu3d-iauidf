@@ -1,0 +1,56 @@
+val r = Val[String]
+val seed = Val[Long]
+val folderOut = Val[File]
+var imu = Val[String]
+var fileName = Val[String]
+val parameterFile = Val[File]
+val dataDir = Val[File]
+val aggregateOutputDir = Val[File]
+val inputCSV = Val[File]
+
+val folderName = "dataBasicSimu"
+val scenar = "scenario"
+val shapesDir = "pchoisy" 
+val paramFileName = "parameters_iauidf.xml"
+val directoriesToAnalyze  = Val[Array[File]]
+
+val baseInputDir = workDirectory / folderName / shapesDir
+//val dirSource = ListDirectoriesSource(baseInputDir, directoriesToAnalyze, "7709091.*")
+val dirSource = ListDirectoriesSource(baseInputDir, directoriesToAnalyze)
+
+val resultDirName = "results_pchoisy"
+val outputCSV = workDirectory / resultDirName / "output.csv"
+val resultDir = workDirectory / resultDirName
+
+val rangeSeed = (42L to 42L)
+
+val explo = ExplorationTask(dataDir in directoriesToAnalyze withName imu) 
+
+val javaTask = ScalaTask("val folderOut = newDir(); val r = fr.ign.simplu3d.EPFIFTaskRunner.run(dataDir, imu, folderOut, parameterFile, seed)") set (
+  libraries += workDirectory / "simplu3d-openMole-runner-0.0.1-SNAPSHOT-shaded.jar",
+  parameterFile := workDirectory / folderName / scenar / paramFileName,
+  seed := 42L,
+  inputs += (dataDir, parameterFile, seed, imu),
+  outputs += (r, folderOut, dataDir, imu)
+)
+
+val copyHook =  CopyFileHook(folderOut,  workDirectory / resultDirName / "${imu}/")
+
+val csvHook = AppendToCSVFileHook(outputCSV, r) set (
+  csvHeader := "directory ; idpar ; number of objects ; sdp ; iterations",
+  arraysOnSingleRow := true
+)
+
+val aggregate = ScalaTask("val aggregateOutputDir = newDir(); fr.ign.simplu3d.AggregateResults.run(imu, dataDir, folderOut, inputCSV, aggregateOutputDir)") set (
+  libraries += workDirectory / "simplu3d-openMole-runner-0.0.1-SNAPSHOT-shaded.jar",
+  inputCSV := outputCSV,
+  inputs  += (imu.toArray, dataDir.toArray, folderOut.toArray, inputCSV),
+  outputs += (aggregateOutputDir)
+)
+
+val aggregateCopyHook = CopyFileHook(aggregateOutputDir, resultDir)
+
+//val env = LocalEnvironment(2)
+val env = EGIEnvironment("vo.complex-systems.eu",openMOLEMemory = 2500 megabytes)
+
+(explo source dirSource) -< (javaTask on env hook (copyHook,csvHook)) >- aggregate hook aggregateCopyHook
