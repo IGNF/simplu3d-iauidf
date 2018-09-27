@@ -81,6 +81,9 @@ public class EPFIFTask {
 	public final static int CODE_SIMULATION_NOT_RUNNABLE = -2;
 	public final static int CODE_PARCEL_TOO_BIG = -88;
 	public final static int CODE_SIMUL_ZERO = -42;
+	
+	
+	public static String ATT_SIMUL = "SIMUL";
 
 	// parcels with no rules
 	private static List<String> idparWithNoRules = new ArrayList<>();
@@ -240,21 +243,27 @@ public class EPFIFTask {
 		Map<String, List<Regulation>> map = new HashMap<>();
 
 		for (IFeature feat : featC) {
-			System.out.println("att simul " + feat.getAttribute("SIMUL").toString());
+			
+	
+			
 			List<Regulation> lRegulation = new ArrayList<>();
 
 			String id = feat.getAttribute(ParcelAttributeTransfert.PARCELLE_ID).toString();
 			// System.out.println("id " + id);
 			int code_imu = imu; /// l'imu n'est pas dans le .csv
 			/// Integer.parseInt(newmap.get(att_imu).toString());
-
-			int simul = Integer.parseInt(feat.getAttribute("SIMUL").toString());
+			
+		System.out.println("att simul " + feat.getAttribute(ATT_SIMUL).toString());
+			
+			int simul = Integer.parseInt(feat.getAttribute(ATT_SIMUL).toString());
 			if (simul == 0) {
 				if (!idparSimulIsZero.contains(id)) {
 					idparSimulIsZero.add(id);
 				}
 				continue;
 			}
+
+			
 
 			Object ot = feat.getAttribute(ParcelAttributeTransfert.att_libelle_zone);
 			if (ot == null) {

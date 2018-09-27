@@ -1,6 +1,5 @@
 package fr.ign.simplu3d.iauidf.optimizer.mix;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +40,7 @@ import fr.ign.cogit.simplu3d.rjmcmc.cuboid.transformation.parallelCuboid.MovePar
 import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.IntersectionVolumeBinaryEnergy;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.VolumeUnaryEnergy;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.sampler.GreenSamplerBlockTemperature;
+import fr.ign.cogit.simplu3d.rjmcmc.generic.visitor.CountVisitor;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.visitor.PrepareVisitors;
 import fr.ign.cogit.simplu3d.util.SimpluParameters;
 import fr.ign.mpp.DirectRejectionSampler;
@@ -102,23 +102,25 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 	}
 
 	public GraphConfiguration<Cuboid> process(BasicPropertyUnit bpu, SimpluParameters p, Environnement env,
-											  PredicateIAUIDF<Cuboid, GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> pred, Regulation r1,
-											  Regulation r2, BandProduction bP) throws Exception {
-		// Géométrie de l'unité foncière sur laquelle porte la génération (on se permet de faire un petit buffer)
+			PredicateIAUIDF<Cuboid, GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> pred, Regulation r1,
+			Regulation r2, BandProduction bP) throws Exception {
+		// Géométrie de l'unité foncière sur laquelle porte la génération (on se permet
+		// de faire un petit buffer)
 		IGeometry geom = bpu.getPol2D().buffer(1);
-		// Définition de la fonction d'optimisation (on optimise en décroissant) relative au volume
+		// Définition de la fonction d'optimisation (on optimise en décroissant)
+		// relative au volume
 		GraphConfiguration<Cuboid> conf = null;
 		try {
 			conf = create_configuration(p, geom, bpu);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		RandomGenerator random = new MersenneTwister(42);
-		
-		
+
 		// Création de l'échantilloneur
-		Sampler<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> samp = create_sampler(random, p, bpu, pred, r1, r2, bP);
+		Sampler<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> samp = create_sampler(random, p, bpu, pred,
+				r1, r2, bP);
 		if (samp == null) {
 			return null;
 		}
@@ -126,25 +128,34 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		Schedule<SimpleTemperature> sch = create_schedule(p);
 		EndTest end = create_end_test(p);
 		System.out.println("*************** " + end.getClass() + " ********************");
+
 		PrepareVisitors<Cuboid> pv = new PrepareVisitors<>(env);
-		CompositeVisitor<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> mVisitor = pv.prepare(p, bpu.getId());
+		CompositeVisitor<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> mVisitor = pv.prepare(p,
+				bpu.getId());
+		this.countV = pv.getCountV();
+
 		/*
-		 * < This is the way to launch the optimization process. Here, the magic happens... >
+		 * < This is the way to launch the optimization process. Here, the magic
+		 * happens... >
 		 */
 		SimulatedAnnealing.optimize(Random.random(), conf, samp, sch, end, mVisitor);
 		return conf;
 	}
 
-	public GraphConfiguration<Cuboid> create_configuration(SimpluParameters p, IGeometry geom, BasicPropertyUnit bpu) throws Exception {
+	public int getCount() {
+		return this.countV.getCount();
+	}
+
+	public GraphConfiguration<Cuboid> create_configuration(SimpluParameters p, IGeometry geom, BasicPropertyUnit bpu)
+			throws Exception {
 		return this.create_configuration(p, AdapterFactory.toGeometry(new GeometryFactory(), geom), bpu);
 	}
 
 	/**
 	 * Création de la configuration.
-	 * @param p
-	 *            paramètres importés depuis le fichier XML
-	 * @param bpu
-	 *            l'unité foncière considérée
+	 * 
+	 * @param p   paramètres importés depuis le fichier XML
+	 * @param bpu l'unité foncière considérée
 	 * @return la configuration chargée, c'est à dire la formulation énergétique
 	 *         prise en compte
 	 */
@@ -156,11 +167,15 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		return create_configuration_no_inter(p, geom, bpu);
 	}
 
-	private GraphConfiguration<Cuboid> create_configuration_intersection(SimpluParameters p, Geometry geom, BasicPropertyUnit bpu) {
+	protected CountVisitor<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> countV = null;
+
+	private GraphConfiguration<Cuboid> create_configuration_intersection(SimpluParameters p, Geometry geom,
+			BasicPropertyUnit bpu) {
 		// Énergie constante : à la création d'un nouvel objet
 		ConstantEnergy<Cuboid, Cuboid> energyCreation = new ConstantEnergy<Cuboid, Cuboid>(p.getDouble("energy"));
 		// Énergie constante : pondération de l'intersection
-		ConstantEnergy<Cuboid, Cuboid> ponderationVolume = new ConstantEnergy<Cuboid, Cuboid>(p.getDouble("ponderation_volume"));
+		ConstantEnergy<Cuboid, Cuboid> ponderationVolume = new ConstantEnergy<Cuboid, Cuboid>(
+				p.getDouble("ponderation_volume"));
 		// Énergie unaire : aire dans la parcelle
 		UnaryEnergy<Cuboid> energyVolume = new VolumeUnaryEnergy<Cuboid>();
 		// Multiplication de l'énergie d'intersection et de l'aire
@@ -197,14 +212,12 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 	/**
 	 * Sampler
 	 * 
-	 * @param p
-	 *            les paramètres chargés depuis le fichier xml
-	 *            l'enveloppe dans laquelle on génère les positions
+	 * @param p les paramètres chargés depuis le fichier xml
+	 * @param r l'enveloppe dans laquelle on génère les positions
 	 * @return
 	 * @throws Exception
 	 */
-	public Sampler<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> create_sampler(
-			RandomGenerator rng,
+	public Sampler<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> create_sampler(RandomGenerator rng,
 			SimpluParameters p, BasicPropertyUnit bpU,
 			ConfigurationModificationPredicate<GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> pred,
 			Regulation r1, Regulation r2, BandProduction bP) throws Exception {
@@ -222,14 +235,19 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		double maxheight = p.getDouble("maxheight");
 		double maxheight2 = p.getDouble("maxheight");
 		IEnvelope env = bpU.getGeom().envelope();
-		// in multi object situations, we need an object builder for each subtype and a sampler for the supertype (end of file)
-		
-		// Est-ce que l'implémentation dans la première bande se fait parallèlement à la voirie ?
-		// On regarde si c'est possible avec la présence d'une limite donnant sur la voirie sinon c'est non
+		// in multi object situations, we need an object builder for each subtype and a
+		// sampler for the supertype (end of file)
+
+		// Est-ce que l'implémentation dans la première bande se fait parallèlement à la
+		// voirie ?
+		// On regarde si c'est possible avec la présence d'une limite donnant sur la
+		// voirie sinon c'est non
 		boolean band1Parallel = !(bP.getLineRoad() == null || bP.getLineRoad().isEmpty());
-		// On prépare le vecteur dans lequel on va tirer aléatoirement les boîtes dans la première bande
+		// On prépare le vecteur dans lequel on va tirer aléatoirement les boîtes dans
+		// la première bande
 		double[] v = new double[] { env.minX(), env.minY(), minlen, minwid, minheight, 0. };
-		// On regarde si la contrainte de hauteur ne permet pas de réduire l'intervallle des hauteurs
+		// On regarde si la contrainte de hauteur ne permet pas de réduire l'intervallle
+		// des hauteurs
 		if (r1 != null && r1.getArt_10_m() != 99) {
 			maxheight = Math.min(maxheight, r1.getArt_10_m());
 		}
@@ -254,19 +272,21 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		////////////////////////
 		// On prépare les transforme
 		////////////////////////
-		// On calcule la transforme 1 => il n'est pas initialisé s'il n'y a pas de bande 1
+		// On calcule la transforme 1 => il n'est pas initialisé s'il n'y a pas de bande
+		//////////////////////// 1
 		Transform transformBand1 = null;
 		ObjectBuilder<Cuboid> builderBand1 = null;
 		Class<?> c1 = null;
 		if (geomBand1 != null && !geomBand1.isEmpty()) {
 			if (band1Parallel) {
 				geomBand1 = geomBand1.buffer(-minwid / 2);
-				if(! geomBand1.isValid()){
-					//Hack to get ValidGeometries
+				if (!geomBand1.isValid()) {
+					// Hack to get ValidGeometries
 					geomBand1 = geomBand1.buffer(0.1);
 				}
 				// S'il n'y a qu'une seule bande de constructibilité
-				// On peut demander à construire des bâtiments dans la bande derrière le bâtiment aligné à la voirie
+				// On peut demander à construire des bâtiments dans la bande derrière le
+				// bâtiment aligné à la voirie
 				// On va séparer en 2 en fonction de la largeur max du bâtiment
 				if (r2 == null) {
 					geomBand2 = geomBand1.difference(bP.getLineRoad().buffer(maxwid));
@@ -275,7 +295,8 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 						geomBand2 = null;
 					}
 				}
-				// The center is included in a band equals to half of max allowed width according to alignment line
+				// The center is included in a band equals to half of max allowed width
+				// according to alignment line
 				geomBand1 = geomBand1.intersection(bP.getLineRoad().buffer(maxwid / 2));
 				if (geomBand1 == null || geomBand1.isEmpty()) {
 					geomBand1 = null;
@@ -293,7 +314,7 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 				}
 			} else {
 				geomBand1 = geomBand1.buffer(-minwid / 2);
-				if(! geomBand1.isValid()){
+				if (!geomBand1.isValid()) {
 					geomBand1 = geomBand1.buffer(0.1);
 				}
 				if (geomBand1 == null || geomBand1.isEmpty()) {
@@ -314,7 +335,8 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		ObjectBuilder<Cuboid> builderBand2 = null;
 		boolean band2parallel = false;
 		Class<?> c2 = null;
-		// On calcule la transforme 2 => il n'est pas initialisé s'il n'y a pas de bande 2
+		// On calcule la transforme 2 => il n'est pas initialisé s'il n'y a pas de bande
+		// 2
 		Transform transformBand2 = null;
 		// On récupère la seconde bande
 		if (r2 != null) {
@@ -324,7 +346,8 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		if (r2 != null && geomBand2 != null && !geomBand2.isEmpty()) {
 			if (r2 != null && r2.getArt_71() == 2) {
 				band2parallel = true;
-				List<ParcelBoundary> featC = bpU.getCadastralParcels().get(0).getBoundariesBySide(PredicateIAUIDF.RIGHT_OF_LEFT_FOR_ART_71);
+				List<ParcelBoundary> featC = bpU.getCadastralParcels().get(0)
+						.getBoundariesBySide(PredicateIAUIDF.RIGHT_OF_LEFT_FOR_ART_71);
 				IMultiCurve<IOrientableCurve> ims = new GM_MultiCurve<>();
 				for (ParcelBoundary s : featC) {
 					ims.addAll(FromGeomToLineString.convert(s.getGeom()));
@@ -336,7 +359,8 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 						ims.addAll(FromGeomToLineString.convert(s.getGeom()));
 					}
 				}
-				// The center is included in a band equals to half of max allowed width according to alignment line
+				// The center is included in a band equals to half of max allowed width
+				// according to alignment line
 				geomBand2 = geomBand2.intersection(ims.buffer(maxwid / 2));
 				if (geomBand2 == null || geomBand2.isEmpty()) {
 					geomBand2 = null;
@@ -354,12 +378,12 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 				}
 			} else {
 				geomBand2 = geomBand2.buffer(-minwid / 2);
-				if(!geomBand2.isValid()){
+				if (!geomBand2.isValid()) {
 					geomBand2 = geomBand2.buffer(0.1);
 				}
 				if (geomBand2 == null || geomBand2.isEmpty()) {
 					geomBand2 = null;
-				} else if(geomBand2 != null && ! geomBand2.isEmpty()){
+				} else if (geomBand2 != null && !geomBand2.isEmpty()) {
 					builderBand2 = new SimpleCuboidBuilder2();
 					TransformToSurface tempTransform = new TransformToSurface(d2, v, geomBand2);
 					if (!tempTransform.isValid()) {
@@ -372,10 +396,11 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 				}
 			}
 		}
-		// Cas où il n'y a qu'une seule bande, mais qu'on implante des bâtiments derrière
+		// Cas où il n'y a qu'une seule bande, mais qu'on implante des bâtiments
+		// derrière
 		if (r2 == null && geomBand2 != null) {
 			builderBand2 = new SimpleCuboidBuilder();
-			TransformToSurface tempTransform =  new TransformToSurface(d, v, geomBand2);
+			TransformToSurface tempTransform = new TransformToSurface(d, v, geomBand2);
 			if (!tempTransform.isValid()) {
 				this.isValid = false;
 				System.out.println("Not valid : " + bpU.getCadastralParcels().get(0).getCode());
@@ -387,7 +412,8 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		////////////////////////
 		// Préparation des noyaux de modification
 		////////////////////////
-		// Probabilité de s'implenter en bande 1 ou 2 (si c'est inférieur c'est 2 et supérieur c'est 1)
+		// Probabilité de s'implenter en bande 1 ou 2 (si c'est inférieur c'est 2 et
+		//////////////////////// supérieur c'est 1)
 		double p_simple = 0.5;
 		Variate variate = new Variate(rng);
 		// Probabilité de naissance-morts modifications
@@ -414,13 +440,17 @@ public class MultipleBuildingsCuboid extends BasicCuboidOptimizer<Cuboid> {
 		} else {
 			p_simple = 0; // pas de transform on ne sera jamais dans la bande 2
 		}
-		// Si on ne peut pas construire dans la deuxième bande ni dans la première ça sert à rien de continue
+		// Si on ne peut pas construire dans la deuxième bande ni dans la première ça
+		// sert à rien de continue
 		if (kernels.isEmpty()) {
 			return null;
 		}
-		// When direct sampling (solomon, etc.), what is the prob to choose a simple cuboid
-		// CuboidSampler objectSampler = new CuboidSampler(rng, p_simple, transformSimple, transformParallel);
-		MixCuboidSampler objectSampler = new MixCuboidSampler(rng, p_simple, transformBand1, transformBand2, builderBand1, builderBand2, c1, c2);
+		// When direct sampling (solomon, etc.), what is the prob to choose a simple
+		// cuboid
+		// CuboidSampler objectSampler = new CuboidSampler(rng, p_simple,
+		// transformSimple, transformParallel);
+		MixCuboidSampler objectSampler = new MixCuboidSampler(rng, p_simple, transformBand1, transformBand2,
+				builderBand1, builderBand2, c1, c2);
 		// poisson distribution
 		PoissonDistribution distribution = new PoissonDistribution(rng, p.getDouble("poisson"));
 		DirectSampler<Cuboid, GraphConfiguration<Cuboid>, BirthDeathModification<Cuboid>> ds = new DirectRejectionSampler<>(

@@ -24,6 +24,7 @@ import fr.ign.cogit.simplu3d.rjmcmc.cuboid.builder.mix.ParallelRightTrapezoidAbs
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.builder.mix.SimpleCuboidAbstractSimpleBuildingBuilder;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.builder.mix.SimpleCuboidAbstractSimpleBuildingBuilder2;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.AbstractSimpleBuilding;
+import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.Cuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.simple.ParallelCuboid2;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.simple.SimpleCuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.simple.SimpleCuboid2;
@@ -39,6 +40,7 @@ import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.IntersectionVolumeBinaryEnerg
 import fr.ign.cogit.simplu3d.rjmcmc.generic.energy.VolumeUnaryEnergy;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.optimizer.DefaultSimPLU3DOptimizer;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.sampler.GreenSamplerBlockTemperature;
+import fr.ign.cogit.simplu3d.rjmcmc.generic.visitor.CountVisitor;
 import fr.ign.cogit.simplu3d.rjmcmc.generic.visitor.PrepareVisitors;
 import fr.ign.cogit.simplu3d.rjmcmc.trapezoid.geometry.ParallelTrapezoid2;
 import fr.ign.cogit.simplu3d.rjmcmc.trapezoid.transform.ParallelTrapezoidTransform;
@@ -132,6 +134,7 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 		PrepareVisitors<AbstractSimpleBuilding> pv = new PrepareVisitors<>(env);
 		CompositeVisitor<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>> mVisitor = pv
 				.prepare(p, bpu.getId());
+		this.countV = pv.getCountV();
 		/*
 		 * < This is the way to launch the optimization process. Here, the magic
 		 * happen... >
@@ -140,9 +143,16 @@ public class MultipleBuildingsTrapezoidCuboid extends DefaultSimPLU3DOptimizer<A
 		return conf;
 	}
 
+
+	protected CountVisitor<GraphConfiguration<AbstractSimpleBuilding>, BirthDeathModification<AbstractSimpleBuilding>> countV = null;
+	
 	public GraphConfiguration<AbstractSimpleBuilding> create_configuration(SimpluParameters p, IGeometry geom,
 			BasicPropertyUnit bpu) throws Exception {
 		return this.create_configuration(p, AdapterFactory.toGeometry(new GeometryFactory(), geom), bpu);
+	}
+	
+	public int getCount() {
+		return this.countV.getCount();
 	}
 
 	// Création de la configuration

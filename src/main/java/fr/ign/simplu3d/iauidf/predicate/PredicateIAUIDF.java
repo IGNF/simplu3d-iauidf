@@ -207,7 +207,9 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
 
     O birth = null;
 
-    if (!m.getBirth().isEmpty()) {
+    if (m.getBirth().isEmpty()) {
+    return true;	
+    }
       birth = m.getBirth().get(0);
       // IMultiSurface<IOrientableSurface> gm = new GM_MultiSurface<>();
       // gm.add(birth.getFootprint());
@@ -215,7 +217,6 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
       // Exec.debugSurface.add(gm);
       // }
 
-    }
 
     // Vérification des règles au niveau de la parcelle
 
