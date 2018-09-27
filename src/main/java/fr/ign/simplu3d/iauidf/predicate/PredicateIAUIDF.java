@@ -185,7 +185,11 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
     // une même propriété imposée en mètre 88= non renseignable, 99= non
     // réglementé
 	  
-	  
+	    O birth = null;
+
+	    if (m.getBirth().isEmpty()) {
+	    return true;	
+	    }
 	  
     double distanceInterBati = r1.getArt_8();
     
@@ -205,11 +209,7 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
     }
     
 
-    O birth = null;
 
-    if (m.getBirth().isEmpty()) {
-    return true;	
-    }
       birth = m.getBirth().get(0);
       // IMultiSurface<IOrientableSurface> gm = new GM_MultiSurface<>();
       // gm.add(birth.getFootprint());
@@ -573,7 +573,7 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
     // 10 : retrait égal aux trois quarts de la hauteur
 
     int r_art74 = r.getArt_74();
-    if (r_art74 != 0) {
+    if (r_art74 != 0 && r_art74 != 88 && r_art74 != 99 ) {
       double slope = 0;
       double hIni = 0;
       switch (r_art74) {
