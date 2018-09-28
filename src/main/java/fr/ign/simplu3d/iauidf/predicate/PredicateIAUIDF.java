@@ -742,8 +742,6 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
   }
 
 
-  private long c = 0;
-
   // check width of group of cuboids
   private boolean checkWidth(List<AbstractSimpleBuilding> lO,
       double widthBuffer) {
@@ -757,54 +755,17 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
     // will that do it ?
     // System.out.println(union.getClass());
     if (union instanceof Polygon) {
-      // union = gf
-      // .createPolygon(((Polygon) union).getExteriorRing().getCoordinates())
-      // .buffer(5).buffer(-5);
-      union = union.buffer(5).buffer(-5);
-    }
-    boolean multi = false;
-    if (union instanceof MultiPolygon) {
-     // System.out.println("multi " + union);
-      return false;
-      // System.out.println("multi " + union);
-      // union = union.buffer(5).buffer(-5);
-      // // if it is still a multipolygon we test if we can remove too small
-      // ones!
-      // if (union instanceof MultiPolygon) {
-      // MultiPolygon mp = ((MultiPolygon) union);
-      // int nbOfSmallOnes = 0;
-      // int bigOneindice = -1;
-      // for (int i = 0; i < mp.getNumGeometries(); ++i) {
-      // if (mp.getGeometryN(i).getArea() < 5)
-      // nbOfSmallOnes++;
-      // else
-      // bigOneindice = i;
-      // }
-      // if (mp.getNumGeometries() - nbOfSmallOnes > 1)
-      // return false;
-      // union = mp.getGeometryN(bigOneindice);
-      // }
-      // union = gf
-      // .createPolygon(((Polygon) union).getExteriorRing().getCoordinates());
-      // System.out.println("multibuffered " + union);
-      // multi = true;
-      // au final on peut court circuiter ?
-      // return false;
-    }
 
-    Geometry negativeBuffer = union.buffer(-widthBuffer);
-    
+      union = union.buffer(5).buffer(-5-widthBuffer);
+    }else {
+    	System.out.println("Is this geometry not a polygon ?");
+    	return false;
+    }
     
 
-    if (negativeBuffer.isEmpty() || negativeBuffer.getArea() < 0.001) {
-      ++c;
-      if (c % 10000 == 0 || multi) {
-      //  System.out.println("**** " + multi);
-    	  //  System.out.println("**** " + union);
-    	  // System.out.println("good width "
-    	  //  + (negativeBuffer.isEmpty() ? "empty" : negativeBuffer));
-    	  //System.out.println("group size " + lO.size());
-      }
+
+    if (union.isEmpty() || union.getArea() < 0.001) {
+
       return true;
     }
     // System.out.println("too big");
