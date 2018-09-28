@@ -81,8 +81,7 @@ public class EPFIFTask {
 	public final static int CODE_SIMULATION_NOT_RUNNABLE = -2;
 	public final static int CODE_PARCEL_TOO_BIG = -88;
 	public final static int CODE_SIMUL_ZERO = -42;
-	
-	
+
 	public static String ATT_SIMUL = "SIMUL";
 
 	// parcels with no rules
@@ -175,7 +174,7 @@ public class EPFIFTask {
 				} else {
 					if (!idparWithNoRules.contains(bPU.getCadastralParcels().get(0).getCode())) {
 						if (!idsimulationNotRunnable.contains(bPU.getCadastralParcels().get(0).getCode())) {
-							result += imu + " ; " + id + " ; " + 0 + " ; " + 0 + " ; " +0+ "\n";
+							result += imu + " ; " + id + " ; " + 0 + " ; " + 0 + " ; " + 0 + "\n";
 						}
 					}
 				}
@@ -243,27 +242,38 @@ public class EPFIFTask {
 		Map<String, List<Regulation>> map = new HashMap<>();
 
 		for (IFeature feat : featC) {
-			
-	
-			
+
 			List<Regulation> lRegulation = new ArrayList<>();
 
 			String id = feat.getAttribute(ParcelAttributeTransfert.PARCELLE_ID).toString();
 			// System.out.println("id " + id);
 			int code_imu = imu; /// l'imu n'est pas dans le .csv
 			/// Integer.parseInt(newmap.get(att_imu).toString());
-			
-		System.out.println("att simul " + feat.getAttribute(ATT_SIMUL).toString());
-			
-			int simul = Integer.parseInt(feat.getAttribute(ATT_SIMUL).toString());
-			if (simul == 0) {
+
+			System.out.println("att simul " + feat.getAttribute(ATT_SIMUL).toString());
+
+			boolean simul = true;
+
+			try {
+
+				simul = (1 == Integer.parseInt(feat.getAttribute(ATT_SIMUL).toString()));
+
+			} catch (Exception e) {
+
+				try {
+					simul = Boolean.parseBoolean(feat.getAttribute(ATT_SIMUL).toString());
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+
+			}
+
+			if (! simul) {
 				if (!idparSimulIsZero.contains(id)) {
 					idparSimulIsZero.add(id);
 				}
 				continue;
 			}
-
-			
 
 			Object ot = feat.getAttribute(ParcelAttributeTransfert.att_libelle_zone);
 			if (ot == null) {
@@ -277,7 +287,7 @@ public class EPFIFTask {
 			// int insee = Integer.parseInt(
 			// feat.getAttribute(ParcelAttributeTransfert.att_insee).toString());
 			String tempo = feat.getAttribute(ParcelAttributeTransfert.att_insee).toString();
-			int insee = Integer.parseInt(tempo.equals("") ? "-1" : tempo);
+			int insee = (int) Math.round(Double.parseDouble(tempo.equals("") ? "-1" : tempo));
 			// si champs vide ya pas eu de correspondance aves le fichier de
 			// regles
 			// inutile de parser la suite (qui va planter..)
@@ -296,23 +306,36 @@ public class EPFIFTask {
 			//
 			String libelle_de_base = feat.getAttribute(ParcelAttributeTransfert.att_libelle_de_base).toString(); // LIBELLE_DE_BASE
 			String libelle_de_dul = feat.getAttribute(ParcelAttributeTransfert.att_libelle_de_dul).toString(); // LIBELLE_DE_DUL
+			
 			int fonctions = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_fonctions).toString());
+			
 			int top_zac = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_top_zac).toString());
+			
 			int zonage_coherent = Integer
 					.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_zonage_coherent).toString());
+			
 			int correction_zonage = Integer
 					.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_correction_zonage).toString());
+			
 			int typ_bande = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_typ_bande).toString());
+			
 			int bande = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_bande).toString());
+			
 			double art_5 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_5).toString());
 			double art_6 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_6).toString());
+			
 			int art_71 = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_art_71).toString());
+			
 			double art_72 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_72).toString());
 			double art_73 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_73).toString());
+			
 			int art_74 = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_art_74).toString());
+			
 			double art_8 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_8).toString());
 			double art_9 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_9).toString());
+			
 			int art_10_top = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_art_10_top).toString());
+			
 			double art_10 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_10).toString());
 			double art_10_m = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_10_m).toString());
 			double art_12 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_12).toString());
@@ -596,8 +619,6 @@ public class EPFIFTask {
 
 		GraphConfiguration<Cuboid> cc = oCB.process(bPU, p, env, pred, r1, r2, bP);
 
-
-
 		if (cc == null) {
 
 			if (!oCB.isValid()) {
@@ -609,8 +630,7 @@ public class EPFIFTask {
 			}
 			return new IAUIDFSimulationResults(featC, 0, 0);
 		}
-		
-		
+
 		int nbIteration = oCB.getCount();
 
 		double energy = Math.abs(cc.getEnergy());
@@ -659,13 +679,12 @@ public class EPFIFTask {
 		// environnement, id et prédicat
 
 		GraphConfiguration<AbstractSimpleBuilding> cc = oCB.process(bPU, p, env, pred, r1, r2, bP);
-	
 
 		if (cc == null) {
 			idsimulationNotRunnable.add(bPU.getCadastralParcels().get(0).getCode());
 			return new IAUIDFSimulationResults(featC, 0, 0);
 		}
-		
+
 		int nbIteration = oCB.getCount();
 
 		double energy = Math.abs(cc.getEnergy());
