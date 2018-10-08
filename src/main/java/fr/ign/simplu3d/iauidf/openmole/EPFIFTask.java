@@ -334,7 +334,7 @@ public class EPFIFTask {
 			double art_8 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_8).toString());
 			double art_9 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_9).toString());
 			
-			int art_10_top = Integer.parseInt(feat.getAttribute(ParcelAttributeTransfert.att_art_10_top).toString());
+			double art_10_top =  Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_10_top).toString());
 			
 			double art_10 = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_10).toString());
 			double art_10_m = Double.parseDouble(feat.getAttribute(ParcelAttributeTransfert.att_art_10_m).toString());

@@ -27,10 +27,10 @@ public class Regulation {
 
 	// Les intitulés des colonnes
 	private int code_imu, insee, date_approbation, fonctions, top_zac, zonage_coherent, correction_zonage, typ_bande,
-	    bande, art_71, art_74, art_10_top;
+	    bande, art_71, art_74;
 	private String libelle_zone, libelle_de_base, libelle_de_dul;
 
-	private double art_5, art_72, art_73, art_8, art_6, art_9, art_10, art_12, art_14, art_13, art_10_m;
+	private double art_5, art_72, art_73, art_8, art_6, art_9, art_10, art_10_top, art_12, art_14, art_13, art_10_m;
 
 	public Regulation() {
 
@@ -39,7 +39,7 @@ public class Regulation {
 	public Regulation(int code_imu, String libelle_zone, int insee, int date_approbation, String libelle_de_base,
 	    String libelle_de_dul, int fonctions, int top_zac, int zonage_coherent, int correction_zonage, int typ_bande,
 	    int bande, double art_5, double art_6, int art_71, double art_72, double art_73, int art_74, double art_8,
-	    double art_9, int art_10_top, double art_10, double art_10_m, double art_12, double art_13, double art_14) {
+	    double art_9, double art_10_top, double art_10, double art_10_m, double art_12, double art_13, double art_14) {
 		super();
 		this.code_imu = code_imu;
 		this.libelle_zone = libelle_zone;
@@ -305,7 +305,7 @@ public class Regulation {
 	// 1_niveaux ; 2_metres du sol au point le plus haut du batiment ; 3_hauteur
 	// plafond ; 4_ point le plus haut ; 5_Hauteur de façade à l'égout, 88= non
 	// renseignable ; 99= non règlementé
-	public int getArt_10_top() {
+	public double getArt_10_top() {
 		return art_10_top;
 	}
 
