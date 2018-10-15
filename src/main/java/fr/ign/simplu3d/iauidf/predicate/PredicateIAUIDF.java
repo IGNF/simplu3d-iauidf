@@ -447,6 +447,9 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
       double slope = 0;
       double hIni = 0;
       switch (r_art74) {
+      case 0:
+    	  //No prospect no verification
+    	  return true;
         case 1:
           slope = 1;
           break;
