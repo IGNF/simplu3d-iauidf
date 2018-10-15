@@ -45,7 +45,6 @@ import fr.ign.cogit.simplu3d.util.SimpluParametersJSON;
 import fr.ign.mpp.configuration.BirthDeathModification;
 import fr.ign.mpp.configuration.GraphConfiguration;
 import fr.ign.mpp.configuration.GraphVertex;
-import fr.ign.parameters.Parameters;
 import fr.ign.simplu3d.iauidf.optimizer.mix.MultipleBuildingsCuboid;
 import fr.ign.simplu3d.iauidf.optimizer.mix.MultipleBuildingsTrapezoidCuboid;
 import fr.ign.simplu3d.iauidf.predicate.PredicateIAUIDF;

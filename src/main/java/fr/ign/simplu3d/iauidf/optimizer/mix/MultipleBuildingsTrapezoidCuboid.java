@@ -24,7 +24,6 @@ import fr.ign.cogit.simplu3d.rjmcmc.cuboid.builder.mix.ParallelRightTrapezoidAbs
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.builder.mix.SimpleCuboidAbstractSimpleBuildingBuilder;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.builder.mix.SimpleCuboidAbstractSimpleBuildingBuilder2;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.AbstractSimpleBuilding;
-import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.impl.Cuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.simple.ParallelCuboid2;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.simple.SimpleCuboid;
 import fr.ign.cogit.simplu3d.rjmcmc.cuboid.geometry.simple.SimpleCuboid2;
