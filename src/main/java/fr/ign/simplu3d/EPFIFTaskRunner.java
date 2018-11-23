@@ -48,15 +48,14 @@ public class EPFIFTaskRunner {
 	ParcelAttributeTransfert.att_art_10_m_2 = "B2_HAUT_M";
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									
 
-    String numrep = "8951";
-    EPFIFTask.inclusion_list.add("94055000AN0043");
-    String foldName ="/home/mbrasebin/Documents/Donnees/IAUIDF/Input/Input1/dep_94_connected_openmole/dataBasicSimu/dep94/";
+    String numrep = "124";
+    //EPFIFTask.inclusion_list.add("94055000AN0043");
+    String foldName ="/home/mbrasebin/.openmole/ZBOOK-SIGOPT-2016/webui/projects/pchoisy_openmole_tarball/dataBasicSimu/pchoisy/";
     
     
     File folder = new File(foldName + numrep + "/");
     File folderOut = new File("/tmp/tmp/" + numrep + "/");
-    File parameterFile = new File("/home/mbrasebin/Documents/Donnees/IAUIDF/Input/Input1/dep_94_connected_openmole/dataBasicSimu/scenario/parameters_iauidf_temp.xml");
-    
+    File parameterFile = new File("/home/mbrasebin/.openmole/ZBOOK-SIGOPT-2016/webui/projects/pchoisy_openmole_tarball/dataBasicSimu/scenario/parameters_iauidf.json");
     
 
     
