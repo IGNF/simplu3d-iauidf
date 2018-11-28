@@ -750,13 +750,19 @@ public class PredicateIAUIDF<O extends AbstractSimpleBuilding, C extends Abstrac
 		return union;
 	}
 
-	public static double ELONGATION_MAX = 4;
+	public static double ELONGATION_MAX = 3;
 
 	// check width of group of cuboids
 	private boolean checkWidthAndElongation(List<AbstractSimpleBuilding> lO, double widthBuffer, double elongationMax) {
 
-		if (lO.size() < 2)
+		
+		if(lO.isEmpty()) {
 			return true;
+		}
+		if (lO.size() == 1) {
+			return checkElongation(lO.get(0).toGeometry(), elongationMax);
+		}
+		
 		Geometry union = getGroupGeom(lO);
 
 		if (!checkElongation(union, elongationMax)) {

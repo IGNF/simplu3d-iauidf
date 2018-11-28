@@ -48,8 +48,8 @@ public class EPFIFTaskRunner {
 	ParcelAttributeTransfert.att_art_10_m_2 = "B2_HAUT_M";
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									
 
-    String numrep = "124";
-    //EPFIFTask.inclusion_list.add("94055000AN0043");
+    String numrep = "74";
+    EPFIFTask.inclusion_list.add("940220000I0045");
     String foldName ="/home/mbrasebin/.openmole/ZBOOK-SIGOPT-2016/webui/projects/pchoisy_openmole_tarball/dataBasicSimu/pchoisy/";
     
     
