@@ -333,10 +333,11 @@ public class AggregateResults {
 
 	public static void main(String[] args) throws Exception {
 		AggregateResults.PARCEL_NAME = "parcelle.shp";
-		File dataDir[] = (new File("/home/mbrasebin/.openmole/ZBOOK-SIGOPT-2016/webui/projects/pchoisy_openmole_tarball/dataBasicSimu/pchoisy/")).listFiles();
+		File dataDir[] = (new File("/home/mbrasebin/.openmole/ZBOOK-SIGOPT-2016/webui/projects/pchoisy_openmole_tarball/results_pchoisy/")).listFiles();
 		File inputCSV = (new File("/home/mbrasebin/.openmole/ZBOOK-SIGOPT-2016/webui/projects/pchoisy_openmole_tarball/results_pchoisy/output.csv"));
 		File aggregateOutputDir = new File("/tmp/tmp/");
-		aggregateParcels(dataDir, inputCSV, new File(aggregateOutputDir, "parcels.shp"));
+		//aggregateParcels(dataDir, inputCSV, new File(aggregateOutputDir, "parcels.shp"));
+		aggregateBuildings(dataDir, new File(aggregateOutputDir, "buildings.shp"));
 		
 	}
 }

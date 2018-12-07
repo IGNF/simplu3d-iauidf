@@ -250,13 +250,17 @@ public class EPFIFTask {
 			int code_imu = imu; /// l'imu n'est pas dans le .csv
 			/// Integer.parseInt(newmap.get(att_imu).toString());
 
-			System.out.println("att simul " + feat.getAttribute(ATT_SIMUL).toString());
-
+			Object attSimult = feat.getAttribute(ATT_SIMUL);
+			
+			
+			
+			
 			boolean simul = true;
 
 			try {
 
-				simul = (1 == Integer.parseInt(feat.getAttribute(ATT_SIMUL).toString()));
+				simul = (attSimult != null) && (1 == Integer.parseInt(feat.getAttribute(ATT_SIMUL).toString()));
+				System.out.println("att simul " + simul);
 
 			} catch (Exception e) {
 
