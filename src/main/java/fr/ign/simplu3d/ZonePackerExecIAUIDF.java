@@ -3,6 +3,7 @@ package fr.ign.simplu3d;
 import fr.ign.cogit.geoxygene.api.feature.IFeature;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.util.conversion.ShapefileReader;
+import fr.ign.cogit.simplu3d.util.distribution.Initialize;
 import fr.ign.cogit.simplu3d.util.distribution.ZonePackager;
 import fr.ign.simplu3d.iauidf.openmole.EPFIFTask;
 
@@ -28,6 +29,10 @@ public class ZonePackerExecIAUIDF {
 			return ;
 
 		}
+		
+		Initialize.init();
+		
+		
 		String parcelFileIn = args[0];// "/home/mbrasebin/Bureau/parcels_rulez/real/parcels_rulez.shp";
 		String folderTemp = args[1]; // "/tmp/tmp/";
 		String folderOut = args[2]; // "/tmp/out/";
