@@ -2,7 +2,11 @@
 
 [![Build Status](https://travis-ci.org/SimPLU3D/simplu3D-iauidf.svg?branch=master)](https://travis-ci.org/SimPLU3D/simplu3D-iauidf)
 
-A project that contains the code for simulating the constructability on Ile-De-France urban zones with  [SimPLU3D library](https://github.com/SimPLU3D/) and CartoPLU+ regulation database (provided by IAUIDF and DRIEA).
+A project that contains the code for simulating the constructability on Ile-De-France urban zones with  [SimPLU3D library](https://simplu3d.github.io/) and CartoPLU+ regulation database (provided by IAUIDF and DRIEA).
+
+This work is publisehd in :
+> Brasebin, M., P. Chapron, G. Chérel, M. Leclaire, I. Lokhat, J. Perret and R. Reuillon (2017) Apports des méthodes d’exploration et de distribution appliquées à la simulation des droits à bâtir, Actes du Colloque International de Géomatique et d'Analyse Spatiale (SAGEO 2017). [Article](https://mbrasebin.github.io/publications/2017-Sageo.pdf) , [Présentation](https://mbrasebin.github.io/presentations/2017-SAGEO.pdf)
+
 
 Conditions for use
 ---------------------
