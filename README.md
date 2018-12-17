@@ -22,7 +22,7 @@ Contact for feedbacks
 ---------------------
 [Mickaël Brasebin](https://mbrasebin.github.io/) & [Julien Perret](http://recherche.ign.fr/labos/cogit/cv.php?prenom=Julien&nom=Perret)
 [COGIT Laboratory](http://recherche.ign.fr/labos/cogit/accueilCOGIT.php)
-
+({surname.name} (AT) {gmail} (POINT) {com})
 
 Acknowledgments
 ---------------------
